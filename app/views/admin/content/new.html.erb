@@ -7,7 +7,6 @@
     <form name ="merge" action=<%="/admin/content/merge/" + @article.id.to_s %> method="get">
     Article ID: <%= text_field 'article', 'keywords', {:autocomplete => 'off', :style => 'width: 50%'} %>
     <br>
-
      <input type="submit" value="Merge" >
    </form>
 </div>

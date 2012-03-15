@@ -128,6 +128,7 @@ class Article < Content
       end
     end
     self.body += second_article.body
+    second_article.destroy
     self.save
   end
 
