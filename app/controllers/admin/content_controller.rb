@@ -18,7 +18,7 @@ class Admin::ContentController < Admin::BaseController
       first_article= Article.find_by_id(params[:id])
       first_article.merge_with(second_article_id)
     end
-    #redirect_to("/admin/content")
+    redirect_to("/admin/content")
   end
 
   def auto_complete_for_article_keywords

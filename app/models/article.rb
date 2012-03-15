@@ -128,7 +128,7 @@ class Article < Content
       end
     end
     self.body += second_article.body
-    second_article.destroy
+    Article.find_by_id(other_article_id).destroy
     self.save
   end
 
