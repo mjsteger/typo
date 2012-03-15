@@ -1,9 +1,41 @@
 require 'spec_helper'
+require 'ruby-debug'
 
+describe "admin/content/new.html.erb" do
+  before do
+    standard_user = stub_model(User, :settings => {:editor => 'simple'}, :admin? => false, :profile_label => "not_admin")
+
+    blog = mock_model(Blog, :base_url => "http://myblog.net/")
+    article = stub_model(Article).as_new_record
+    text_filter = stub_model(TextFilter)
+
+    article.stub(:text_filter) { text_filter }
+    view.stub(:current_user) { standard_user }
+    view.stub(:this_blog) { blog }
+
+    # FIXME: Nasty. Controller should pass in @categories and @textfilters.
+    Category.stub(:all) { [] }
+    TextFilter.stub(:all) { [text_filter] }
+
+    assign :article, article
+
+
+
+  end
+  it "doesnt let non-admins see the merg" do
+    assign(:images, [])
+    assign(:macros, [])
+    assign(:resources, [])
+    render
+    rendered.should_not contain "Merge"
+  end
+
+end
 describe "admin/content/new.html.erb" do
   before do
     admin = stub_model(User, :settings => {:editor => 'simple'}, :admin? => true,
                        :text_filter_name => "", :profile_label => "admin")
+
     blog = mock_model(Blog, :base_url => "http://myblog.net/")
     article = stub_model(Article).as_new_record
     text_filter = stub_model(TextFilter)
@@ -11,7 +43,7 @@ describe "admin/content/new.html.erb" do
     article.stub(:text_filter) { text_filter }
     view.stub(:current_user) { admin }
     view.stub(:this_blog) { blog }
-    
+
     # FIXME: Nasty. Controller should pass in @categories and @textfilters.
     Category.stub(:all) { [] }
     TextFilter.stub(:all) { [text_filter] }
@@ -25,7 +57,13 @@ describe "admin/content/new.html.erb" do
     assign(:resources, [])
     render
   end
-
+  it "lets the admin see merge" do
+    assign(:images, [])
+    assign(:macros, [])
+    assign(:resources, [])
+    render
+    rendered.should contain "Merge"
+  end
   it "renders with image resources" do
     # FIXME: Nasty. Thumbnail creation should not be controlled by the view.
     img = mock_model(Resource, :filename => "foo", :create_thumbnail => nil)
