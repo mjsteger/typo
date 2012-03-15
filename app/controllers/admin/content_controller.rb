@@ -7,18 +7,18 @@ class Admin::ContentController < Admin::BaseController
   cache_sweeper :blog_sweeper
 
   def merge
-
+    first_article_id = params[:id]
     second_article_id = params[:article][:keywords]
     second_article = Article.find_by_id(second_article_id)
     unless ! second_article.nil?
       redirect_to("/admin/content")
       return
     end
-    if second_article_id.to_i != 0
+    if second_article_id.to_i != 0 && second_article_id != first_article_id
       first_article= Article.find_by_id(params[:id])
       first_article.merge_with(second_article_id)
     end
-    redirect_to("/admin/content")
+    #redirect_to("/admin/content")
   end
 
   def auto_complete_for_article_keywords
