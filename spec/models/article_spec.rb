@@ -1,6 +1,6 @@
 # coding: utf-8
 require 'spec_helper'
-
+require 'ruby-debug'
 describe Article do
 
   before do
@@ -19,6 +19,32 @@ describe Article do
     expected.each do |i|
       assert @articles.include?(i.is_a?(Symbol) ? contents(i) : i)
     end
+  end
+
+  it "test merge body" do
+    a = Article.new({:user_id => 1, :body => "Foo", :title => "yay", :id => 1})
+    b = Article.new({:user_id => 1, :body => "Boo", :title => "yay", :id => 2})
+    a.save; b.save
+    a.merge_with(b.id)
+    a.body.should include "Boo"
+  end
+
+  it "test that there is one author" do
+    a = Article.new({:user_id => 1, :body => "Foo", :title => "yay", :id => 1, :author => 1})
+    b = Article.new({:user_id => 2, :body => "Boo", :title => "yay", :id => 2, :author => 2})
+    a.save; b.save
+    a.merge_with(b.id)
+    a.author.should == 1
+  end
+
+  it "test that merging works for comments" do
+    a = Article.new({:user_id => 1, :body => "Foo", :title => "yay", :id => 1})
+    b = Article.new({:user_id => 1, :body => "Boo", :title => "yay", :id => 2})
+    a.save; b.save
+    a_comment = Factory(:comment, :article => a)
+    b_comment = Factory(:comment, :article => b)
+    a.merge_with(b.id)
+    a.comments.should include(b_comment)
   end
 
   it "test_content_fields" do
@@ -545,7 +571,7 @@ describe Article do
     describe "#find_by_permalink" do
       it "uses UTC to determine correct day" do
         @a.save
-        a = Article.find_by_permalink :year => 2011, :month => 2, :day => 21, :permalink => 'a-big-article' 
+        a = Article.find_by_permalink :year => 2011, :month => 2, :day => 21, :permalink => 'a-big-article'
         a.should == @a
       end
     end
@@ -566,7 +592,7 @@ describe Article do
     describe "#find_by_permalink" do
       it "uses UTC to determine correct day" do
         @a.save
-        a = Article.find_by_permalink :year => 2011, :month => 2, :day => 22, :permalink => 'a-big-article' 
+        a = Article.find_by_permalink :year => 2011, :month => 2, :day => 22, :permalink => 'a-big-article'
         a.should == @a
       end
     end

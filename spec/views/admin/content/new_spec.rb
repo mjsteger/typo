@@ -18,10 +18,8 @@ describe "admin/content/new.html.erb" do
     TextFilter.stub(:all) { [text_filter] }
 
     assign :article, article
-
-
-
   end
+
   it "doesnt let non-admins see the merg" do
     assign(:images, [])
     assign(:macros, [])
